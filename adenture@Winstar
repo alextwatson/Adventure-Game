@@ -1,85 +1,154 @@
+                                                                                                                                       
 package main
 
 import (
-  "fmt"
-	"bufio"
-	"os"
-	"strings"
-  "math/rand"
-  "time"
+        "bufio"
+        "fmt"
+        "math/rand"
+        "os"
+        "strconv"
+        "strings"
+        "time"
+
+        "github.com/fatih/color"
 )
 
 func main() {
-  fmt.Println("Hello WinStar!!!")
-  fmt.Println("Welcome, get your chips ready and...")
-  fmt.Println("PLAY")
-  for i := 0; i < 6; i++{
-    fmt.Println("your game choices are...")
-    fmt.Println("for Roulette enter r")
-    fmt.Println("for Poker enter p")
-    reader := bufio.NewReader(os.Stdin)
-    text, _ := reader.ReadString('\n')
-    text = strings.Replace(text, "\n", "", -1)
-    if strings.Compare("r", text) == 0 {
-      fmt.Println("This is Roulette!")
-      fmt.Println("to bet on black press b")
-      fmt.Println("to bet on red press r")
-      //use of bufio & os
-      reader = bufio.NewReader(os.Stdin)
-      text, _ = reader.ReadString('\n')
-      // use of Strings
-      text = strings.Replace(text, "\n", "", -1)
-      if strings.Compare("r", text) == 0 {
-        fmt.Println("It's going!")
-        fmt.Println("spinning and spinning and spinning")
-        fmt.Println("and it's...")
-	//use of rand/math & time
-        rand.Seed(time.Now().UnixNano())
-        var randNum int = rand.Intn(2)
-        fmt.Println(randNum)
-        if randNum == 1 && strings.Compare("r", text) == 0{
-          fmt.Println("congratulations, you win")
-        }else{
-          fmt.Println("sorry you lost :( ")
+        fmt.Println("Hello WinStar!!!\u2660\u2666\u2665\u2663 ")
+        fmt.Println("Welcome, get your chips ready and...")
+        fmt.Println("PLAY")
+        fmt.Println("you have 200 chips, if you lose them all your done.")
+        chips := 200
+        for i := 0; i < 6; i++ {
+                fmt.Println("your game choices are...")
+                fmt.Println("for Roulette enter r")
+                fmt.Println("for Poker enter p")
+                reader := bufio.NewReader(os.Stdin)
+                text, _ := reader.ReadString('\n')
+                text = strings.Replace(text, "\n", "", -1)
+                if strings.Compare("r", text) == 0 {
+                        fmt.Println("This is Roulette!")
+                        fmt.Println("you have ", chips)
+                        fmt.Println("to $40 bet on black press b")
+                        fmt.Println("to $40 bet on red press r")
+                        chips = chips - 40
+                        //use of bufio & os                                                                                                                                          
+                        reader = bufio.NewReader(os.Stdin)
+                        text, _ = reader.ReadString('\n')
+                        // use of Strings                                                                                                                                            
+                        text = strings.Replace(text, "\n", "", -1)
+                        if strings.Compare("r", text) == 0 {
+                                fmt.Println("It's going!")
+                                fmt.Println("spinning and spinning and spinning")
+                                fmt.Println("and it's...")
+                                //use of rand/math & time                                                                                                                            
+                                rand.Seed(time.Now().UnixNano())
+                                var randNum int = rand.Intn(2)
+                                fmt.Println(randNum)
+                                if randNum == 1 && strings.Compare("r", text) == 0 {
+                                        fmt.Println("congratulations, you win $60")
+                                        chips = chips + 60
+                                        fmt.Println("you have $", chips)
+                                } else {
+                                        fmt.Println("sorry you lost :( ")
+                                }
+                        } else {
+                                fmt.Println("It's going!")
+                                fmt.Println("spinning and spinning and spinning")
+                                fmt.Println("and it's...")
+                                rand.Seed(time.Now().UnixNano())
+                                var randNum int = rand.Intn(2)
+                                fmt.Println(randNum)
+                                if randNum == 0 && strings.Compare("b", text) == 0 {
+                                        fmt.Println("congratulations, you win $60")
+                                        chips = chips + 60
+                                        fmt.Println("you have $", chips)
+                                } else {
+                                        fmt.Println("sorry you lost :( ")
+                                }
+                        }
+                }
+                if strings.Compare("p", text) == 0 {
+                        var numMap = map[int]int{}
+                        var suitMap = map[int]int{}
+                        type card struct {
+                                number int
+                                suit   int
+			}
+ 			var myCard card
+			var deck = map[card]int{}
+                        for v := 0; v < 14; v++ {
+                                for z := 0; z < 4; z++ {
+                                        myCard.number = v
+                                        myCard.suit = z
+                                        deck[myCard]++
+                                }
+                        }
+                        fmt.Println("hi welcome to the table here are your cards")
+                        for j := 0; j < 5; j++ {
+                                rand.Seed(time.Now().UnixNano())
+                                var randNum int = rand.Intn(14) + 1
+                                var suitRand int = rand.Intn(4)
+                                myCard.number = randNum
+                                myCard.suit = suitRand
+                                if deck[myCard] == 1 {
+                                        deck[myCard] = 0
+                                } else {
+                                        j--
+                                        continue
+                                }
+                                displayNum := strconv.Itoa(randNum)
+                                if displayNum == "11" {
+                                        displayNum = " J"
+                                } else if displayNum == "12" {
+                                        displayNum = " Q"
+                                } else if displayNum == "13" {
+                                        displayNum = " K"
+                                } else if displayNum == "14" {
+                                        displayNum = " A"
+                                } else if randNum < 10 {
+                                        displayNum = " " + displayNum
+                                }
+                                if suitRand == 2 {
+                                        color.Red(displayNum + "\u2665") //heart                                                                                                     
+                                } else if suitRand == 1 {
+                                        color.Red(displayNum + "\u2666") //diamond                                                                                                   
+                                } else if suitRand == 0 {
+                                        fmt.Printf("%s\u2663\n", displayNum) // clubs                                                                                                
+                                } else if suitRand == 3 {
+                                        fmt.Printf("%s\u2660\n", displayNum) // spades                                                                                               
+                                }
+                                numMap[randNum]++
+                                suitMap[suitRand]++
+                        }
+                        fullCheck := 0
+                        flushCheck := 0
+                        for key, val := range numMap {
+                                fullCheck++
+                                fmt.Printf("%v %v\n", key, val)
+                                if val == 2 {
+        fmt.Println("you have a PAIR")
+                                } else if val == 3 {
+                                        fmt.Println("you have a THREE OF A KIND")
+                                } else if val == 4 {
+                                        fmt.Println("you have a FOUR OF A KIND")
+                                } else {
+                                        print()
+                                }
+                        }
+                        for key, val := range suitMap {
+                                flushCheck++
+                                fmt.Printf("%v %v\n", key, val)
+                        }
+                        if flushCheck == 5 {
+                                fmt.Println("you have a FLUSH")
+                        }
+                        if fullCheck == 2 {
+                                fmt.Println("you have a FULL HOUSE")
+                        }
+                }
         }
-      }else {
-        fmt.Println("It's going!")
-        fmt.Println("spinning and spinning and spinning")
-        fmt.Println("and it's...")
-        rand.Seed(time.Now().UnixNano())
-        var randNum int = rand.Intn(2)
-        fmt.Println(randNum)
-        if randNum == 0 && strings.Compare("b", text) == 0{
-          fmt.Println("congratulations, you win")
-        }else{
-          fmt.Println("sorry you lost :( ")
-        }
-      }
-    }
-    if strings.Compare("p", text) == 0{
-      fmt.Println("hi welcome to the table here are your cards")
-      for j := 0; j < 5; j++{
-      	rand.Seed(time.Now().UnixNano())
-      	var randNum int = rand.Intn(13) + 1 
-      	var suitRand int = rand.Intn(3)
-      	if suitRand == 2{
-      		fmt.Println(randNum,"hearts")
-      	}
-      	if suitRand == 1{
-      		fmt.Println(randNum,"diamond")
-      	}
-      	if suitRand == 0{
-      		fmt.Println(randNum,"clubs")
-      	}
-      	if suitRand == 3{
-      		fmt.Println(randNum,"spades")
-      	}
-      }
-      fmt.Println("remember the suit goes: 1, clubs  2,diamonds  3, hearts  4, spades")
-      fmt.Println("and 11, jacks  12, queens  13, kings  1, ace")
-
-    }
-  }
-  fmt.Println("Well, thanks for coming down to WinStar Casino")
-  fmt.Println("have a safe drive home :)")
+        fmt.Println("Well, thanks for coming down to WinStar Casino")
+        fmt.Println("have a safe drive home :)")
 }
+
