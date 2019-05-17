@@ -136,13 +136,29 @@ func main() {
 					fmt.Println("you have a THREE OF A KIND")
 				} else if val == 4 {
 					fmt.Println("you have a FOUR OF A KIND")
+					fullCheck++
 				} else {
 					print()
 				}
 				straight = append(straight, key)
 			}
+			//sort numbers for a straight
 			sort.Ints(straight)
 			fmt.Printf("%+v\n", straight)
+			ln := straight[len(straight)-1]
+			fn := straight[0]
+			ss := ln - fn
+			if ss == 4 {
+				fmt.Println("you have a STRAIGHT")
+				if flushCheck == 1 {
+					fmt.Println("you have a STRAIGHT FLUSH")
+					if myCard.number == 14 {
+						fmt.Println("YOU HAVE A ROYAL FLUSH")
+						chips = chips + 10
+						fmt.Println("you get a free $10")
+					}
+				}
+			}
 			for range suitMap {
 				flushCheck++
 				//fmt.Println(key, val)
@@ -159,5 +175,4 @@ func main() {
 	fmt.Println("Well, thanks for coming down to WinStar Casino")
 	fmt.Println("have a safe drive home :)")
 }
-
 
