@@ -20,6 +20,7 @@ func main() {
 	fmt.Println("you have 200 chips, if you lose them all your done.")
 	chips := 200
 	for i := 0; i < 6; i++ {
+	start:
 		fmt.Println("your game choices are...")
 		fmt.Println("for Roulette enter r")
 		fmt.Println("for Poker enter p")
@@ -33,9 +34,8 @@ func main() {
 			fmt.Println("to $40 bet on red press r")
 			chips = chips - 40
 			//use of bufio & os
-			reader = bufio.NewReader(os.Stdin)
-			text, _ = reader.ReadString('\n')
-			// use of Strings
+			reader := bufio.NewReader(os.Stdin)
+			text, _ := reader.ReadString('\n')
 			text = strings.Replace(text, "\n", "", -1)
 			if strings.Compare("r", text) == 0 {
 				fmt.Println("It's going!")
@@ -45,11 +45,10 @@ func main() {
 				rand.Seed(time.Now().UnixNano())
 				var randNum int = rand.Intn(2)
 				fmt.Println(randNum)
-				if randNum == 1 && strings.Compare("r", text) == 0 {
+				if randNum == 1 {
 					fmt.Println("congratulations, you win $60")
 					chips = chips + 60
 					fmt.Println("you have $", chips)
-
 				} else {
 					fmt.Println("sorry you lost :( ")
 				}
@@ -60,7 +59,7 @@ func main() {
 				rand.Seed(time.Now().UnixNano())
 				var randNum int = rand.Intn(2)
 				fmt.Println(randNum)
-				if randNum == 0 && strings.Compare("b", text) == 0 {
+				if randNum == 0 {
 					fmt.Println("congratulations, you win $60")
 					chips = chips + 60
 					fmt.Println("you have $", chips)
@@ -70,6 +69,7 @@ func main() {
 			}
 		}
 		if strings.Compare("p", text) == 0 {
+			//play poker
 			var numMap = map[int]int{}
 			var suitMap = map[int]int{}
 			type card struct {
@@ -85,7 +85,12 @@ func main() {
 					deck[myCard]++
 				}
 			}
-			fmt.Println("hi welcome to the table here are your cards")
+			fmt.Println("hi welcome to the table, you have ", chips)
+			reader := bufio.NewReader(os.Stdin)
+			text, _ := reader.ReadString('\n')
+			text = strings.Replace(text, "\n", "", -1)
+
+			fmt.Println("here are your cards")
 			for j := 0; j < 5; j++ {
 				rand.Seed(time.Now().UnixNano())
 				var randNum int = rand.Intn(13) + 2
@@ -123,52 +128,138 @@ func main() {
 				suitMap[suitRand]++
 			}
 
+			pair := 0
+			//three := false
+			//full := false
+			//four := false
+			straight := false
+			//flush := false
+			strflush := false
+			royal := false
 			//check the hand
 			fullCheck := 0
 			flushCheck := 0
-			//straightCheck := 0
-			straight := []int{}
+			straightCheck := []int{}
 			for key, val := range numMap {
 				fullCheck++
 				if val == 2 {
 					fmt.Println("you have a PAIR")
+					pair++
 				} else if val == 3 {
 					fmt.Println("you have a THREE OF A KIND")
+					//	three = true
 				} else if val == 4 {
 					fmt.Println("you have a FOUR OF A KIND")
+					//	four = true
 					fullCheck++
 				} else {
 					print()
 				}
-				straight = append(straight, key)
+				straightCheck = append(straightCheck, key)
 			}
 			//sort numbers for a straight
-			sort.Ints(straight)
+			sort.Ints(straightCheck)
 			fmt.Printf("%+v\n", straight)
-			ln := straight[len(straight)-1]
-			fn := straight[0]
+			ln := straightCheck[len(straightCheck)-1]
+			fn := straightCheck[0]
 			ss := ln - fn
 			if ss == 4 {
 				fmt.Println("you have a STRAIGHT")
+				//straight = true
 				if flushCheck == 1 {
 					fmt.Println("you have a STRAIGHT FLUSH")
+					strflush = true
 					if myCard.number == 14 {
 						fmt.Println("YOU HAVE A ROYAL FLUSH")
 						chips = chips + 10
-						fmt.Println("you get a free $10")
+						fmt.Println("you get a free 10 chips")
+						royal = true
 					}
 				}
 			}
 			for range suitMap {
 				flushCheck++
-				//fmt.Println(key, val)
-
 			}
 			if fullCheck == 2 {
 				fmt.Println("you have a FULL HOUSE")
+				//full = true
 			}
 			if flushCheck == 1 {
 				fmt.Println("you have a FLUSH")
+				//flush = true
+			}
+			//poker betting
+			pot := 0
+			call := 0
+			fold2 := false
+			fold3 := false
+			fmt.Println("do you want to bet or do you want to fold")
+			for f := 0; f < 2; f++ {
+				reader := bufio.NewReader(os.Stdin)
+				text, _ := reader.ReadString('\n')
+				text = strings.Replace(text, "\n", "", -1)
+				if strings.Compare("fold", text) == 0 {
+					fmt.Println("Alright thanks for playing")
+					goto start
+				} else {
+					reader := bufio.NewReader(os.Stdin)
+					text, _ := reader.ReadString('\n')
+					text = strings.Replace(text, "\n", "", -1)
+					potInput, _ := strconv.Atoi(text)
+					pot = pot + potInput
+					var player2Bet int = rand.Intn(4)
+					if player2Bet == 0 || player2Bet == 1 {
+						fmt.Println("player 2 calls your bet")
+						pot = pot + potInput
+						call++
+					} else if player2Bet == 2 {
+						var raise2 int = rand.Intn(3)
+						if raise2 == 0 {
+							fmt.Println("he raises 10 chips")
+							pot = pot + 10 + potInput
+						} else if raise2 == 1 {
+							fmt.Println("he raises 20 chips")
+							pot = pot + 20 + potInput
+						} else {
+							fmt.Println("he raises 30 chips")
+							pot = pot + 30 + potInput
+						}
+					} else {
+						println("player 2 has folded")
+					}
+					var player3Bet int = rand.Intn(4)
+					if player3Bet == 0 {
+						fmt.Println("player 2 calls your bet")
+						pot = pot + potInput
+						call++
+					} else if player3Bet == 2 {
+						var raise3 int = rand.Intn(3)
+						if raise3 == 0 {
+							fmt.Println("he raises 10 chips")
+							pot = pot + 10 + potInput
+						} else if raise3 == 1 {
+							fmt.Println("he raises 20 chips")
+							pot = pot + 20 + potInput
+						} else {
+							fmt.Println("he raises 30 chips")
+							pot = pot + 30 + potInput
+						}
+					} else {
+						println("player 3 has folded")
+						fold3 = true
+					}
+					if fold2 == true && fold3 == true {
+						println("congrats you win ", pot, "chips")
+						chips = chips + pot
+					}
+				}
+			}
+			//who wins
+			if royal == true {
+				println("congrats you WIN")
+				chips = chips + pot
+			} else if strflush == true {
+
 			}
 		}
 	}
