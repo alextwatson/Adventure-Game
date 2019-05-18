@@ -13,6 +13,17 @@ import (
 	"github.com/fatih/color"
 )
 
+type card struct {
+	number int
+	suit   int
+}
+type numType map[int]int
+type suitType map[int]int
+
+var aCard card
+
+//var numMap numType
+
 func main() {
 	fmt.Println("Hello WinStar!!!\u2660\u2666\u2665\u2663 ")
 	fmt.Println("Welcome, get your chips ready and...")
@@ -70,19 +81,18 @@ func main() {
 		}
 		if strings.Compare("p", text) == 0 {
 			//play poker
-			var numMap = map[int]int{}
-			var suitMap = map[int]int{}
-			type card struct {
-				number int
-				suit   int
-			}
-			var myCard card
+			//var numMap = map[int]int{}
+			//var suitMap = map[int]int{}
+			//var slice = []{numMap, suitMap}
+
+			//var numSlice = []numType{}
+			//var suitSlice = []suitType{}
 			var deck = map[card]int{}
 			for v := 0; v < 14; v++ {
 				for z := 0; z < 4; z++ {
-					myCard.number = v
-					myCard.suit = z
-					deck[myCard]++
+					aCard.number = v
+					aCard.suit = z
+					deck[aCard]++
 				}
 			}
 			fmt.Println("hi welcome to the table, you have ", chips)
@@ -90,44 +100,9 @@ func main() {
 			text, _ := reader.ReadString('\n')
 			text = strings.Replace(text, "\n", "", -1)
 
-			fmt.Println("here are your cards")
-			for j := 0; j < 5; j++ {
-				rand.Seed(time.Now().UnixNano())
-				var randNum int = rand.Intn(13) + 2
-				var suitRand int = rand.Intn(4)
-				myCard.number = randNum
-				myCard.suit = suitRand
-				if deck[myCard] == 1 {
-					deck[myCard] = 0
-				} else {
-					j--
-					continue
-				}
-				displayNum := strconv.Itoa(randNum)
-				if displayNum == "11" {
-					displayNum = " J"
-				} else if displayNum == "12" {
-					displayNum = " Q"
-				} else if displayNum == "13" {
-					displayNum = " K"
-				} else if displayNum == "14" {
-					displayNum = " A"
-				} else if randNum < 10 {
-					displayNum = " " + displayNum
-				}
-				if suitRand == 2 {
-					color.Red(displayNum + "\u2665") //heart
-				} else if suitRand == 1 {
-					color.Red(displayNum + "\u2666") //diamond
-				} else if suitRand == 0 {
-					fmt.Printf("%s\u2663\n", displayNum) // clubs
-				} else if suitRand == 3 {
-					fmt.Printf("%s\u2660\n", displayNum) // spades
-				}
-				numMap[randNum]++
-				suitMap[suitRand]++
-			}
-
+			numMap, suitMap := deal(deck)
+			//deal(deck, numSlice, suitSlice)
+			//deal(3, deck, numSlice, suitSlice)
 			pair := 0
 			//three := false
 			//full := false
@@ -169,12 +144,12 @@ func main() {
 				if flushCheck == 1 {
 					fmt.Println("you have a STRAIGHT FLUSH")
 					strflush = true
-					if myCard.number == 14 {
-						fmt.Println("YOU HAVE A ROYAL FLUSH")
-						chips = chips + 10
-						fmt.Println("you get a free 10 chips")
-						royal = true
-					}
+					//if myCard.number == 14 {
+					//	fmt.Println("YOU HAVE A ROYAL FLUSH")
+					//	chips = chips + 10
+					//	fmt.Println("you get a free 10 chips")
+					//	royal = true
+					//}
 				}
 			}
 			for range suitMap {
@@ -266,4 +241,45 @@ func main() {
 	fmt.Println("Well, thanks for coming down to WinStar Casino")
 	fmt.Println("have a safe drive home :)")
 }
-
+func deal(deck map[card]int) (numMap numType, suitMap suitType) {
+	fmt.Println("here are your cards")
+	numMap = make(map[int]int)
+	suitMap = make(map[int]int)
+	for j := 0; j < 5; j++ {
+		rand.Seed(time.Now().UnixNano())
+		var randNum int = rand.Intn(13) + 2
+		var suitRand int = rand.Intn(4)
+		aCard.number = randNum
+		aCard.suit = suitRand
+		if deck[aCard] == 1 {
+			deck[aCard] = 0
+		} else {
+			j--
+			continue
+		}
+		displayNum := strconv.Itoa(randNum)
+		if displayNum == "11" {
+			displayNum = " J"
+		} else if displayNum == "12" {
+			displayNum = " Q"
+		} else if displayNum == "13" {
+			displayNum = " K"
+		} else if displayNum == "14" {
+			displayNum = " A"
+		} else if randNum < 10 {
+			displayNum = " " + displayNum
+		}
+		if suitRand == 2 {
+			color.Red(displayNum + "\u2665") //heart
+		} else if suitRand == 1 {
+			color.Red(displayNum + "\u2666") //diamond
+		} else if suitRand == 0 {
+			println(displayNum + "\u2663") // clubs
+		} else if suitRand == 3 {
+			println(displayNum + "\u2660") // spades
+		}
+		numMap[randNum]++
+		suitMap[suitRand]++
+	}
+	return
+}
