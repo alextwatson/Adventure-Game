@@ -108,7 +108,7 @@ func main() {
 			numMap, suitMap := deal(deck)
 			numSlice = append(numSlice, numMap)
 			suitSlice = append(suitSlice, suitMap)
-			var scoreArr = [3]int{}
+			var scoreArr = [3]float64{}
 			scoreArr[0] = check(numSlice[0], suitSlice[0])
 			///////////////////////////////////////////////////////////////////
 			/////////////////////////POKER BETTING/////////////////////////////
@@ -116,7 +116,7 @@ func main() {
 			pot := 0
 			call2 := false
 			call3 := false
-			fmt.Println("do you want to bet or do you want to fold")
+			fmt.Println("do you want to bet or do you want to fold (press f to fold or anything to bet")
 			for f := 0; f < 2; f++ {
 				reader := bufio.NewReader(os.Stdin)
 				text, _ := reader.ReadString('\n')
@@ -241,14 +241,16 @@ func deal(deck map[card]int) (numMap numType, suitMap suitType) {
 	}
 	return
 }
-func check(numMap numType, suitMap suitType) (score int) {
+func check(numMap numType, suitMap suitType) (score float64) {
+	hightpear := 0.0
 	pair := 0
-	three := false
-	full := false
-	four := false
-	straight := false
-	flush := false
-	strflush := false
+	three := 0.0
+	full := 0.0
+	four := 0.0
+	straight := 0.0
+	flush := 0.0
+	strflush := 0.0
+	highCheck := 0.0
 	//royal := false
 	//check the hand
 	fullCheck := 0
@@ -258,14 +260,18 @@ func check(numMap numType, suitMap suitType) (score int) {
 		fullCheck++
 		if val == 2 {
 			//PAIR
+			hightpear = float64(key)
 			pair++
 		} else if val == 3 {
 			//THREE OF A KIND
-			three = true
+			three = float64(key)
 		} else if val == 4 {
 			//FOUR OF A KIND
-			four = true
+			four = float64(key)
 			fullCheck++
+		}
+		if float64(key) > highCheck {
+			highCheck = float64(key)
 		}
 		straightCheck = append(straightCheck, key)
 	}
@@ -276,10 +282,10 @@ func check(numMap numType, suitMap suitType) (score int) {
 	ss := ln - fn
 	if ss == 4 {
 		//STRAIGHT
-		straight = true
+		straight = highCheck
 		if flushCheck == 1 {
 			//STRAIGHT FLUSH
-			strflush = true
+			strflush = highCheck
 			//if myCard.number == 14 {
 			//	fmt.Println("YOU HAVE A ROYAL FLUSH")
 			//	chips = chips + 10
@@ -293,39 +299,39 @@ func check(numMap numType, suitMap suitType) (score int) {
 	}
 	if fullCheck == 2 {
 		//FULL HOUSE
-		full = true
+		full = highCheck
 	}
 	if flushCheck == 1 {
 		//FLUSH
-		flush = true
+		flush = highCheck
 	}
-	if strflush == true {
+	if strflush > 0 {
 		println("you have a STRAIGHT FLUSH")
-		return 8
-	} else if four == true {
+		return float64(8) + strflush/100
+	} else if four > 0 {
 		println("you have a FOUR OF A KIND")
-		return 7
-	} else if full == true {
+		return float64(7) + four/100
+	} else if full > 0 {
 		println("you have a FULL HOUSE")
-		return 6
-	} else if flush == true {
+		return float64(6) + full/100
+	} else if flush > 0 {
 		println("you have a FLUSH")
-		return 5
-	} else if straight == true {
+		return float64(6) + flush/100
+	} else if straight > 0 {
 		println("you have a STRAIGHT")
-		return 4
-	} else if three == true {
+		return float64(5) + straight/100
+	} else if three > 0 {
 		println("you have a THREE OF A KIND")
-		return 3
+		return float64(3) + three/100
 	} else if pair == 2 {
 		println("you have a 2 PAIR")
-		return 2
+		return float64(2) + hightpear/100
 	} else if pair == 1 {
 		println("you have a PAIR")
-		return 1
+		return float64(1) + hightpear/100
 	} else {
 		println("hope for the high card")
-		return 0
+		return highCheck / 100
 	}
 
 }
