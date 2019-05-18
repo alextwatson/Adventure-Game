@@ -80,8 +80,8 @@ func main() {
 			}
 		}
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		///////POKER//////////////////////////////////////POKER/////////////////////////POKER/////////////////////////////
+		/////////////////////POKER////////////////////////////////////////POKER///////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		if strings.Compare("p", text) == 0 {
 			//play poker
@@ -108,91 +108,14 @@ func main() {
 			numMap, suitMap := deal(deck)
 			numSlice = append(numSlice, numMap)
 			suitSlice = append(suitSlice, suitMap)
+			var scoreArr = [3]int{}
+			scoreArr[0] = check(numSlice[0], suitSlice[0])
 			///////////////////////////////////////////////////////////////////
+			/////////////////////////POKER BETTING/////////////////////////////
 			///////////////////////////////////////////////////////////////////
-
-			pair := 0
-			three := false
-			full := false
-			four := false
-			straight := false
-			flush := false
-			strflush := false
-			//royal := false
-			//check the hand
-			fullCheck := 0
-			flushCheck := 0
-			straightCheck := []int{}
-			for key, val := range numSlice[0] {
-				fullCheck++
-				if val == 2 {
-					//PAIR
-					pair++
-				} else if val == 3 {
-					//THREE OF A KIND
-					three = true
-				} else if val == 4 {
-					//FOUR OF A KIND
-					four = true
-					fullCheck++
-				} else {
-					print()
-				}
-				straightCheck = append(straightCheck, key)
-			}
-			//sort numbers for a straight
-			sort.Ints(straightCheck)
-			fmt.Printf("%+v\n", straight)
-			ln := straightCheck[len(straightCheck)-1]
-			fn := straightCheck[0]
-			ss := ln - fn
-			if ss == 4 {
-				//STRAIGHT
-				straight = true
-				if flushCheck == 1 {
-					//STRAIGHT FLUSH
-					strflush = true
-					//if myCard.number == 14 {
-					//	fmt.Println("YOU HAVE A ROYAL FLUSH")
-					//	chips = chips + 10
-					//	fmt.Println("you get a free 10 chips")
-					//	royal = true
-					//}
-				}
-			}
-			for range suitSlice[0] {
-				flushCheck++
-			}
-			if fullCheck == 2 {
-				//FULL HOUSE
-				full = true
-			}
-			if flushCheck == 1 {
-				//FLUSH
-				flush = true
-			}
-			if strflush == true {
-				println("you have a STRAIGHT FLUSH")
-			} else if four == true {
-				println("you have a FOUR OF A KIND")
-			} else if full == true {
-				println("you have a FULL HOUSE")
-			} else if flush == true {
-				println("you have a FLUSH")
-			} else if straight == true {
-				println("you have a STRAIGHT")
-			} else if three == true {
-				println("you have a THREE OF A KIND")
-			} else if pair == 2 {
-				println("you have a 2 PAIR")
-			} else if pair == 1 {
-				println("you have a PAIR")
-			}
-			//poker betting
 			pot := 0
-			call := 0
-			fold2 := false
-			fold3 := false
+			call2 := false
+			call3 := false
 			fmt.Println("do you want to bet or do you want to fold")
 			for f := 0; f < 2; f++ {
 				reader := bufio.NewReader(os.Stdin)
@@ -208,11 +131,11 @@ func main() {
 					text = strings.Replace(text, "\n", "", -1)
 					potInput, _ := strconv.Atoi(text)
 					pot = pot + potInput
-					var player2Bet int = rand.Intn(4)
+					var player2Bet int = rand.Intn(3)
 					if player2Bet == 0 || player2Bet == 1 {
-						fmt.Println("player 2 calls your bet")
+						fmt.Println("player 2 calls the bet")
 						pot = pot + potInput
-						call++
+						call2 = true
 					} else if player2Bet == 2 {
 						var raise2 int = rand.Intn(3)
 						if raise2 == 0 {
@@ -225,14 +148,12 @@ func main() {
 							fmt.Println("he raises 30 chips")
 							pot = pot + 30 + potInput
 						}
-					} else {
-						println("player 2 has folded")
 					}
-					var player3Bet int = rand.Intn(4)
+					var player3Bet int = rand.Intn(3)
 					if player3Bet == 0 || player3Bet == 1 {
-						fmt.Println("player 3 calls your bet")
+						fmt.Println("player 3 calls the bet")
 						pot = pot + potInput
-						call++
+						call3 = true
 					} else if player3Bet == 2 {
 						var raise3 int = rand.Intn(3)
 						if raise3 == 0 {
@@ -245,22 +166,35 @@ func main() {
 							fmt.Println("he raises 30 chips")
 							pot = pot + 30 + potInput
 						}
-					} else {
-						println("player 3 has folded")
-						fold3 = true
 					}
-					if fold2 == true && fold3 == true {
-						println("congrats you win ", pot, "chips")
-						chips = chips + pot
-					}
-					if fold2 == false {
-						println("know that the beting is done here are the rest of the player's cards")
-						numMap, suitMap := deal(deck)
-						numSlice = append(numSlice, numMap)
-						suitSlice = append(suitSlice, suitMap)
+					if call2 == true && call3 == true {
+						f = f + 2
+						continue
 					}
 				}
+
 			}
+			println("Now that the beting is done here are player 2's cards")
+			numMap, suitMap = deal(deck)
+			numSlice = append(numSlice, numMap)
+			suitSlice = append(suitSlice, suitMap)
+			scoreArr[1] = check(numSlice[1], suitSlice[1])
+			println("Now that the beting is done here are player 3's cards")
+			numMap, suitMap = deal(deck)
+			numSlice = append(numSlice, numMap)
+			suitSlice = append(suitSlice, suitMap)
+			scoreArr[2] = check(numSlice[2], suitSlice[2])
+			if scoreArr[0] > scoreArr[1] && scoreArr[0] > scoreArr[2] {
+				println("congrats you win ", pot, "chips")
+				chips = chips + pot
+			} else if scoreArr[1] > scoreArr[0] && scoreArr[1] > scoreArr[2] {
+				println("sorry you lost")
+				pot = 0
+			} else if scoreArr[2] > scoreArr[0] && scoreArr[2] > scoreArr[1] {
+				println("sorry you lost")
+				pot = 0
+			}
+
 		}
 	}
 	fmt.Println("Well, thanks for coming down to WinStar Casino")
@@ -306,4 +240,92 @@ func deal(deck map[card]int) (numMap numType, suitMap suitType) {
 		suitMap[suitRand]++
 	}
 	return
+}
+func check(numMap numType, suitMap suitType) (score int) {
+	pair := 0
+	three := false
+	full := false
+	four := false
+	straight := false
+	flush := false
+	strflush := false
+	//royal := false
+	//check the hand
+	fullCheck := 0
+	flushCheck := 0
+	straightCheck := []int{}
+	for key, val := range numMap {
+		fullCheck++
+		if val == 2 {
+			//PAIR
+			pair++
+		} else if val == 3 {
+			//THREE OF A KIND
+			three = true
+		} else if val == 4 {
+			//FOUR OF A KIND
+			four = true
+			fullCheck++
+		}
+		straightCheck = append(straightCheck, key)
+	}
+	//sort numbers for a straight
+	sort.Ints(straightCheck)
+	ln := straightCheck[len(straightCheck)-1]
+	fn := straightCheck[0]
+	ss := ln - fn
+	if ss == 4 {
+		//STRAIGHT
+		straight = true
+		if flushCheck == 1 {
+			//STRAIGHT FLUSH
+			strflush = true
+			//if myCard.number == 14 {
+			//	fmt.Println("YOU HAVE A ROYAL FLUSH")
+			//	chips = chips + 10
+			//	fmt.Println("you get a free 10 chips")
+			//	royal = true
+			//}
+		}
+	}
+	for range suitMap {
+		flushCheck++
+	}
+	if fullCheck == 2 {
+		//FULL HOUSE
+		full = true
+	}
+	if flushCheck == 1 {
+		//FLUSH
+		flush = true
+	}
+	if strflush == true {
+		println("you have a STRAIGHT FLUSH")
+		return 8
+	} else if four == true {
+		println("you have a FOUR OF A KIND")
+		return 7
+	} else if full == true {
+		println("you have a FULL HOUSE")
+		return 6
+	} else if flush == true {
+		println("you have a FLUSH")
+		return 5
+	} else if straight == true {
+		println("you have a STRAIGHT")
+		return 4
+	} else if three == true {
+		println("you have a THREE OF A KIND")
+		return 3
+	} else if pair == 2 {
+		println("you have a 2 PAIR")
+		return 2
+	} else if pair == 1 {
+		println("you have a PAIR")
+		return 1
+	} else {
+		println("hope for the high card")
+		return 0
+	}
+
 }
