@@ -30,7 +30,7 @@ func main() {
 	fmt.Println("PLAY")
 	fmt.Println("you have 200 chips, if you lose them all your done.")
 	chips := 200
-	for i := 0; i < 6; i++ {
+	for i := 0; i < 5; i++ {
 	start:
 		fmt.Println("your game choices are...")
 		fmt.Println("for Roulette enter r")
@@ -38,6 +38,10 @@ func main() {
 		reader := bufio.NewReader(os.Stdin)
 		text, _ := reader.ReadString('\n')
 		text = strings.Replace(text, "\n", "", -1)
+
+		////////////////ROULETTE///////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////ROULETTE/////////////////////////////////////////
+		/////////////////////////////////////////////////////////////////ROULETTE//////////////////
 		if strings.Compare("r", text) == 0 {
 			fmt.Println("This is Roulette!")
 			fmt.Println("you have ", chips)
@@ -50,31 +54,38 @@ func main() {
 			text = strings.Replace(text, "\n", "", -1)
 			if strings.Compare("r", text) == 0 {
 				fmt.Println("It's going!")
-				fmt.Println("spinning and spinning and spinning")
+				println("spinning and spinning and spinning")
+				//color.Attribute("
 				fmt.Println("and it's...")
 				//use of rand/math & time
+				time.Sleep(3000 * time.Millisecond)
 				rand.Seed(time.Now().UnixNano())
 				var randNum int = rand.Intn(2)
-				fmt.Println(randNum)
 				if randNum == 1 {
-					fmt.Println("congratulations, you win $60")
-					chips = chips + 60
+					color.Red("RED\n")
+					fmt.Println("congratulations, you win $80")
+					chips = chips + 80
 					fmt.Println("you have $", chips)
 				} else {
+					println("black")
 					fmt.Println("sorry you lost :( ")
 				}
 			} else {
 				fmt.Println("It's going!")
-				fmt.Println("spinning and spinning and spinning")
+				println("spinning and spinning and spinning")
 				fmt.Println("and it's...")
+				time.Sleep(3000 * time.Millisecond)
 				rand.Seed(time.Now().UnixNano())
 				var randNum int = rand.Intn(2)
 				fmt.Println(randNum)
 				if randNum == 0 {
-					fmt.Println("congratulations, you win $60")
-					chips = chips + 60
+					println("BLACK")
+					fmt.Println("congratulations, you win $80")
+					chips = chips + 80
 					fmt.Println("you have $", chips)
 				} else {
+
+					color.Red("red\n")
 					fmt.Println("sorry you lost :( ")
 				}
 			}
@@ -91,7 +102,7 @@ func main() {
 			var numSlice = []numType{}
 			var suitSlice = []suitType{}
 			var deck = map[card]int{}
-			for v := 0; v < 14; v++ {
+			for v := 2; v <= 14; v++ {
 				for z := 0; z < 4; z++ {
 					aCard.number = v
 					aCard.suit = z
@@ -114,87 +125,174 @@ func main() {
 			/////////////////////////POKER BETTING/////////////////////////////
 			///////////////////////////////////////////////////////////////////
 			pot := 0
+			potInput := 0
+			need := 10
 			call2 := false
 			call3 := false
-			fmt.Println("do you want to bet or do you want to fold (press f to fold or anything to bet")
+			allIn := false
+			fold2 := false
+			fold3 := false
 			for f := 0; f < 2; f++ {
+				fmt.Println("do you want to bet ", need, "or do you want to fold (press f to fold or enter to bet)")
 				reader := bufio.NewReader(os.Stdin)
 				text, _ := reader.ReadString('\n')
 				text = strings.Replace(text, "\n", "", -1)
-				if strings.Compare("fold", text) == 0 {
+				if strings.Compare("f", text) == 0 {
 					fmt.Println("Alright thanks for playing")
 					goto start
 				} else {
-					println("place your bet")
+					println("how much do you want to bet, it must be at least", need)
 					reader := bufio.NewReader(os.Stdin)
 					text, _ := reader.ReadString('\n')
 					text = strings.Replace(text, "\n", "", -1)
-					potInput, _ := strconv.Atoi(text)
-					pot = pot + potInput
-					var player2Bet int = rand.Intn(3)
-					if player2Bet == 0 || player2Bet == 1 {
-						fmt.Println("player 2 calls the bet")
-						pot = pot + potInput
-						call2 = true
-					} else if player2Bet == 2 {
-						var raise2 int = rand.Intn(3)
-						if raise2 == 0 {
-							fmt.Println("he raises 10 chips")
-							pot = pot + 10 + potInput
-						} else if raise2 == 1 {
-							fmt.Println("he raises 20 chips")
-							pot = pot + 20 + potInput
-						} else {
-							fmt.Println("he raises 30 chips")
-							pot = pot + 30 + potInput
-						}
+					if strings.Compare("all in", text) == 0 {
+						potInput = chips
+						f = 3
+						allIn = true
+					} else {
+						potInput, _ = strconv.Atoi(text)
+						need = potInput
 					}
-					var player3Bet int = rand.Intn(3)
-					if player3Bet == 0 || player3Bet == 1 {
-						fmt.Println("player 3 calls the bet")
-						pot = pot + potInput
-						call3 = true
-					} else if player3Bet == 2 {
-						var raise3 int = rand.Intn(3)
-						if raise3 == 0 {
-							fmt.Println("he raises 10 chips")
-							pot = pot + 10 + potInput
-						} else if raise3 == 1 {
-							fmt.Println("he raises 20 chips")
-							pot = pot + 20 + potInput
+					if potInput < need {
+						println("if you don't want to follow the rules we'll bet", need, "for you")
+					}
+					chips = chips - potInput
+					pot = pot + potInput
+					if allIn == false {
+						var player2Bet int = rand.Intn(3)
+						if player2Bet == 0 || player2Bet == 1 {
+							fmt.Println("player 2 calls the bet")
+							pot = pot + potInput
+							call2 = true
+						} else if player2Bet == 2 {
+							var raise2 int = rand.Intn(3)
+							if raise2 == 0 {
+								fmt.Println("he raises 10 chips")
+								need = need + 10
+								pot = pot + 10 + potInput
+							} else if raise2 == 1 {
+								fmt.Println("he raises 20 chips")
+								need = need + 20
+								pot = pot + 20 + potInput
+							} else {
+								fmt.Println("he raises 30 chips")
+								need = need + 30
+								pot = pot + 30 + potInput
+							}
+						}
+						var player3Bet int = rand.Intn(3)
+						if player3Bet == 0 || player3Bet == 1 {
+							fmt.Println("player 3 calls the bet")
+							pot = pot + potInput
+							call3 = true
+						} else if player3Bet == 2 {
+							var raise3 int = rand.Intn(3)
+							if raise3 == 0 {
+								fmt.Println("he raises 10 chips")
+								need = need + 10
+								pot = pot + 10 + potInput
+							} else if raise3 == 1 {
+								fmt.Println("he raises 20 chips")
+								need = need + 20
+								pot = pot + 20 + potInput
+							} else {
+								fmt.Println("he raises 30 chips")
+								need = need + 30
+								pot = pot + 30 + potInput
+							}
+						}
+
+					} else {
+						var player2Bet int = rand.Intn(3)
+						if player2Bet == 0 || player2Bet == 1 {
+							fmt.Println("player 2 calls the bet")
+							pot = pot + potInput
+							call2 = true
 						} else {
-							fmt.Println("he raises 30 chips")
-							pot = pot + 30 + potInput
+							var bluffc2 int = rand.Intn(3)
+							if bluffc2 == 2 {
+								println("player 2: dang,:( I fold")
+								fold2 = true
+							}
+						}
+						var player3Bet int = rand.Intn(3)
+						if player3Bet == 0 || player3Bet == 1 {
+							fmt.Println("player 3 calls the bet")
+							pot = pot + potInput
+							call2 = true
+						} else {
+							var bluffc3 int = rand.Intn(3)
+							if bluffc3 == 2 {
+								println("player 3: dang,:( I fold")
+								fold3 = true
+							}
 						}
 					}
 					if call2 == true && call3 == true {
-						f = f + 2
+						f = 3
 						continue
 					}
 				}
-
 			}
-			println("Now that the beting is done here are player 2's cards")
-			numMap, suitMap = deal(deck)
-			numSlice = append(numSlice, numMap)
-			suitSlice = append(suitSlice, suitMap)
-			scoreArr[1] = check(numSlice[1], suitSlice[1])
-			println("Now that the beting is done here are player 3's cards")
-			numMap, suitMap = deal(deck)
-			numSlice = append(numSlice, numMap)
-			suitSlice = append(suitSlice, suitMap)
-			scoreArr[2] = check(numSlice[2], suitSlice[2])
-			if scoreArr[0] > scoreArr[1] && scoreArr[0] > scoreArr[2] {
+			if fold2 == false {
+				println("player 2's cards")
+				numMap, suitMap = deal(deck)
+				numSlice = append(numSlice, numMap)
+				suitSlice = append(suitSlice, suitMap)
+				scoreArr[1] = check(numSlice[1], suitSlice[1])
+			} else {
+				scoreArr[1] = 0
+			}
+			if fold3 == false {
+				println("player 3's cards")
+				numMap, suitMap = deal(deck)
+				numSlice = append(numSlice, numMap)
+				suitSlice = append(suitSlice, suitMap)
+				scoreArr[2] = check(numSlice[2], suitSlice[2])
+			} else {
+				scoreArr[2] = 0
+			}
+			// if only player 2 folds
+			if fold3 == false && fold2 == true {
+				if scoreArr[0] > scoreArr[2] {
+					println("congrats you win ", pot, "chips")
+					chips = chips + pot
+					println("you have", chips, "left")
+				} else if scoreArr[2] > scoreArr[0] {
+					println("sorry you lost")
+					println("you have", chips, "left")
+				}
+				//if only player 3 folds
+			} else if fold2 == false && fold3 == true {
+				if scoreArr[0] > scoreArr[1] {
+					println("congrats you win ", pot, "chips")
+					chips = chips + pot
+					println("you have", chips, "left")
+				} else if scoreArr[1] > scoreArr[0] {
+					println("sorry you lost")
+					println("you have", chips, "left")
+				}
+				//if nobody folds
+			} else if fold2 == false && fold3 == false {
+				if scoreArr[0] > scoreArr[2] && scoreArr[0] > scoreArr[1] {
+					println("congrats you win ", pot, "chips")
+					chips = chips + pot
+					println("you have", chips, "left")
+				} else if scoreArr[1] > scoreArr[0] && scoreArr[1] > scoreArr[2] {
+					println("sorry you lost")
+					println("you have", chips, "left")
+				} else if scoreArr[2] > scoreArr[0] && scoreArr[2] > scoreArr[1] {
+					println("sorry you lost")
+					println("you have", chips, "left")
+				}
+			} else {
 				println("congrats you win ", pot, "chips")
-				chips = chips + pot
-			} else if scoreArr[1] > scoreArr[0] && scoreArr[1] > scoreArr[2] {
-				println("sorry you lost")
-				pot = 0
-			} else if scoreArr[2] > scoreArr[0] && scoreArr[2] > scoreArr[1] {
-				println("sorry you lost")
-				pot = 0
 			}
-
+			if chips < 1 {
+				println("sorry you lose you ran out of chips")
+				i = 6
+				continue
+			}
 		}
 	}
 	fmt.Println("Well, thanks for coming down to WinStar Casino")
@@ -248,10 +346,11 @@ func check(numMap numType, suitMap suitType) (score float64) {
 	full := 0.0
 	four := 0.0
 	straight := 0.0
+	highSuit := 0.0
 	flush := 0.0
 	strflush := 0.0
 	highCheck := 0.0
-	//royal := false
+	royal := 0.0
 	//check the hand
 	fullCheck := 0
 	flushCheck := 0
@@ -280,22 +379,23 @@ func check(numMap numType, suitMap suitType) (score float64) {
 	ln := straightCheck[len(straightCheck)-1]
 	fn := straightCheck[0]
 	ss := ln - fn
-	if ss == 4 {
+	if ss == 4 && fullCheck == 5 {
 		//STRAIGHT
 		straight = highCheck
 		if flushCheck == 1 {
 			//STRAIGHT FLUSH
 			strflush = highCheck
-			//if myCard.number == 14 {
-			//	fmt.Println("YOU HAVE A ROYAL FLUSH")
-			//	chips = chips + 10
-			//	fmt.Println("you get a free 10 chips")
-			//	royal = true
-			//}
+			if highCheck == 14 {
+				fmt.Println("YOU HAVE A ROYAL FLUSH")
+				royal = highSuit
+			}
 		}
 	}
-	for range suitMap {
+	for key, _ := range suitMap {
 		flushCheck++
+		if float64(key) > highSuit {
+			highSuit = float64(key)
+		}
 	}
 	if fullCheck == 2 {
 		//FULL HOUSE
@@ -305,29 +405,32 @@ func check(numMap numType, suitMap suitType) (score float64) {
 		//FLUSH
 		flush = highCheck
 	}
-	if strflush > 0 {
-		println("you have a STRAIGHT FLUSH")
+	if royal > 0 {
+		color.Magenta("ROYAL FLUSH")
+		return float64(9) + royal/100
+	} else if strflush > 0 {
+		println("STRAIGHT FLUSH")
 		return float64(8) + strflush/100
 	} else if four > 0 {
-		println("you have a FOUR OF A KIND")
+		println("FOUR OF A KIND")
 		return float64(7) + four/100
 	} else if full > 0 {
-		println("you have a FULL HOUSE")
+		println("FULL HOUSE")
 		return float64(6) + full/100
 	} else if flush > 0 {
-		println("you have a FLUSH")
+		println("FLUSH")
 		return float64(6) + flush/100
 	} else if straight > 0 {
-		println("you have a STRAIGHT")
+		println("STRAIGHT")
 		return float64(5) + straight/100
 	} else if three > 0 {
-		println("you have a THREE OF A KIND")
+		println("THREE OF A KIND")
 		return float64(3) + three/100
 	} else if pair == 2 {
-		println("you have a 2 PAIR")
+		println("2 PAIR")
 		return float64(2) + hightpear/100
 	} else if pair == 1 {
-		println("you have a PAIR")
+		println("PAIR")
 		return float64(1) + hightpear/100
 	} else {
 		println("hope for the high card")
